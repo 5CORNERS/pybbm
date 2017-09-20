@@ -622,7 +622,7 @@ class UserView(generic.DetailView):
     def get_object(self, queryset=None):
         if queryset is None:
             queryset = self.get_queryset()
-        return get_object_or_404(queryset, **{username_field: self.kwargs['username']})
+        return User.objects.get(username=self.kwargs['username'])
 
     def get_context_data(self, **kwargs):
         ctx = super(UserView, self).get_context_data(**kwargs)
