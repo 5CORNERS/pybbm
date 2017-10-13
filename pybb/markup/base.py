@@ -18,7 +18,7 @@ def filter_blanks(user, str):
     """
     Replace more than 3 blank lines with only 1 blank line
     """
-    return re.sub(r'\n{2}\n+', '\n', str)
+    return re.sub(r'\n{2}\n+', '\n\n', str)
 
 
 def rstrip_str(user, str):

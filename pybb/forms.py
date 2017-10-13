@@ -1,22 +1,21 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
-import re
+
 import inspect
+import re
 
 from django import forms
 from django.core.exceptions import FieldError, PermissionDenied
 from django.forms.models import inlineformset_factory, BaseInlineFormSet
 from django.utils.decorators import method_decorator
 from django.utils.text import Truncator
-from django.utils.translation import ugettext, ugettext_lazy
 from django.utils.timezone import now as tznow
+from django.utils.translation import ugettext, ugettext_lazy
 from django.utils.translation import ugettext as _
-
 from pybb import compat, defaults, util, permissions
 from pybb.models import Topic, Post, Attachment, PollAnswer, \
     ForumSubscription, Category, Forum, create_or_check_slug
-
 
 User = compat.get_user_model()
 username_field = compat.get_username_field()
@@ -25,12 +24,13 @@ username_field = compat.get_username_field()
 class AttachmentForm(forms.ModelForm):
     class Meta(object):
         model = Attachment
-        fields = ('file', )
+        fields = ('file',)
 
     def clean_file(self):
         if self.cleaned_data['file'].size > defaults.PYBB_ATTACHMENT_SIZE_LIMIT:
             raise forms.ValidationError(ugettext('Attachment is too big'))
         return self.cleaned_data['file']
+
 
 AttachmentFormSet = inlineformset_factory(Post, Attachment, extra=1, form=AttachmentForm)
 
@@ -38,7 +38,7 @@ AttachmentFormSet = inlineformset_factory(Post, Attachment, extra=1, form=Attach
 class PollAnswerForm(forms.ModelForm):
     class Meta:
         model = PollAnswer
-        fields = ('text', )
+        fields = ('text',)
 
 
 class BasePollAnswerFormset(BaseInlineFormSet):
@@ -171,7 +171,6 @@ class PostForm(forms.ModelForm):
 
 
 class MovePostForm(forms.Form):
-
     def __init__(self, instance, user, *args, **kwargs):
         super(MovePostForm, self).__init__(*args, **kwargs)
         self.instance = instance
@@ -231,10 +230,10 @@ class MovePostForm(forms.Form):
             else:
                 name = '%s' % forum
             choices[-1][1].append((forum.pk, name))
-        
+
         self.fields['move_to'] = forms.ChoiceField(label=ugettext_lazy('Move to forum'),
                                                    initial=self.forum.pk,
-                                                   choices=choices, required=True,)
+                                                   choices=choices, required=True, )
         self.fields['name'] = forms.CharField(label=_('New subject'),
                                               initial=self.topic.name,
                                               max_length=255, required=True)
@@ -325,7 +324,7 @@ try:
     class EditProfileForm(forms.ModelForm):
         class Meta(object):
             model = util.get_pybb_profile_model()
-            fields = ['signature', 'time_zone', 'language', 'show_signatures', 'avatar']
+            fields = ['autosubscribe', 'signature', 'time_zone', 'language', 'show_signatures', 'avatar']
 
         def __init__(self, *args, **kwargs):
             super(EditProfileForm, self).__init__(*args, **kwargs)
@@ -391,7 +390,7 @@ class ForumSubscriptionForm(forms.Form):
         self.instance = instance
 
         type_choices = list(ForumSubscription.TYPE_CHOICES)
-        if instance :
+        if instance:
             type_choices.append(
                 ('unsubscribe', _('be unsubscribe from this forum')))
             type_initial = instance.type
@@ -429,7 +428,6 @@ class ForumSubscriptionForm(forms.Form):
 
 
 class ModeratorForm(forms.Form):
-
     def __init__(self, user, *args, **kwargs):
 
         """
