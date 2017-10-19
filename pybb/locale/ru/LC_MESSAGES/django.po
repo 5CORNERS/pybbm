@@ -862,7 +862,7 @@ msgstr "Закрыть тему"
 
 #: templates/pybb/topic.html:70
 msgid "Unsubscribe"
-msgstr "Запретить уведомления"
+msgstr "Больше не получать уведомления о новых постах в этой теме"
 
 #: templates/pybb/topic_list.html:13
 msgid "Views"
