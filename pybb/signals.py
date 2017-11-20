@@ -21,7 +21,7 @@ def post_saved(instance, **kwargs):
         return
 
     instance._post_saved_done = True
-    if not defaults.PYBB_DISABLE_NOTIFICATIONS:
+    if not defaults.PYBB_DISABLE_NOTIFICATIONS and instance.updated == None:
         notify_topic_subscribers(instance)
 
         if util.get_pybb_profile(instance.user).autosubscribe and \
