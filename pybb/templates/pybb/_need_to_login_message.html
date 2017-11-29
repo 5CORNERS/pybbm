@@ -1,2 +1,2 @@
 {% load i18n %}
-<a href="{% url 'account_signup' %}">{% trans 'Register' %}</a> {% trans 'or' %} <a href="{% url 'account_login' %}?next={{ next }}">{% trans 'login' %}</a> {% trans 'to create post' %}.
+<a href="{% url 'account_signup' %}?next={{ request.path }}">{% trans 'Register' %}</a> {% trans 'or' %} <a href="{% url 'account_login' %}?next={{ request.path }}">{% trans 'login' %}</a> {% trans 'to create post' %}.

@@ -521,7 +521,7 @@ class AddPostView(PostEditMixin, generic.CreateView):
                     if not perms.may_view_post(request.user, post):
                         raise PermissionDenied
                     profile = util.get_pybb_profile(post.user)
-                    self.quote = util._get_markup_quoter(defaults.PYBB_MARKUP)(post.body, profile.get_display_name())
+                    self.quote = util._get_markup_quoter(defaults.PYBB_MARKUP)(post.body, profile.get_display_name()) + '\n'
 
                 if self.quote and request.is_ajax():
                     return HttpResponse(self.quote)

@@ -55,7 +55,7 @@ jQuery(function ($) {
                     $(this).closest('.post-row').find('.post-username').length == 1) {
                     username = $.trim($(this).closest('.post').find('.post-username').text());
                 }
-                textarea.val(textarea.val() + window.pybb.markup.quote(selectedText, username));
+                textarea.val(textarea.val() + window.pybb.markup.quote(selectedText, username) + '\n\n');
                 window.location.hash = '#id_body';
             }
         });
