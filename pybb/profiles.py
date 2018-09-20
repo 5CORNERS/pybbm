@@ -31,13 +31,13 @@ class PybbProfile(models.Model):
             ("block_users", "Can block any user"),
         )
 
-    signature = models.TextField(_('Signature'), blank=True, max_length=defaults.PYBB_SIGNATURE_MAX_LENGTH)
+    signature = models.TextField('Подпись на форуме', blank=True, max_length=defaults.PYBB_SIGNATURE_MAX_LENGTH)#_('Signature')
     signature_html = models.TextField(_('Signature HTML Version'), blank=True,
                                       max_length=defaults.PYBB_SIGNATURE_MAX_LENGTH + 30)
     time_zone = models.FloatField(_('Time zone'), choices=TZ_CHOICES, default=float(defaults.PYBB_DEFAULT_TIME_ZONE))
     language = models.CharField(_('Language'), max_length=10, blank=True, choices=settings.LANGUAGES,
                                 default=get_supported_language_variant(settings.LANGUAGE_CODE, strict=True))
-    show_signatures = models.BooleanField(_('Show signatures'), default=True)
+    show_signatures = models.BooleanField('Показывать подпись', default=True)#_('Show signatures')
     post_count = models.IntegerField(_('Post count'), blank=True, default=0)
     avatar = get_image_field_class()(_('Avatar'), blank=True, null=True,
                                      upload_to=util.FilePathGenerator(to='pybb/avatar'))
