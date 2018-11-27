@@ -335,9 +335,10 @@ class Post(RenderableItem):
         # If post is topic head and moderated, moderate topic too
         if self.topic.head == self and not self.on_moderation and self.topic.on_moderation:
             self.topic.on_moderation = False
-
-        self.topic.update_counters()
-        self.topic.forum.update_counters()
+        
+        if new:
+            self.topic.update_counters()
+            self.topic.forum.update_counters()
 
         if topic_changed:
             old_post.topic.update_counters()
