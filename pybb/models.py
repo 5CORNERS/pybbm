@@ -250,8 +250,6 @@ class Topic(models.Model):
         # force cache overwrite to get the real latest updated post
         if hasattr(self, 'last_post'):
             del self.last_post
-        if self.last_post:
-            self.updated = self.last_post.updated or self.last_post.created
         self.save()
 
     def get_parents(self):
