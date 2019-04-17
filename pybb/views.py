@@ -5,13 +5,15 @@ import math
 
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
-from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.exceptions import PermissionDenied, ValidationError, \
+    ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.db.models import F
+from django.db.models import F, Count
 from django.forms.utils import ErrorList
-from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseBadRequest,\
-    HttpResponseForbidden
+from django.http import HttpResponseRedirect, HttpResponse, Http404, \
+    HttpResponseBadRequest, \
+    HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import ugettext as _
 from django.utils.decorators import method_decorator
@@ -23,8 +25,9 @@ from pybb import compat, defaults, util
 from pybb.compat import get_atomic_func
 from pybb.forms import PostForm, MovePostForm, AdminPostForm, AttachmentFormSet, \
     PollAnswerFormSet, PollForm, ForumSubscriptionForm, ModeratorForm
-from pybb.models import Category, Forum, ForumSubscription, Topic, Post, TopicReadTracker, \
-    ForumReadTracker, PollAnswerUser
+from pybb.models import Category, Forum, ForumSubscription, Topic, Post, \
+    TopicReadTracker, \
+    ForumReadTracker, PollAnswerUser, Like
 from pybb.permissions import perms
 from pybb.templatetags.pybb_tags import pybb_topic_poll_not_voted
 
@@ -313,7 +316,7 @@ class TopicView(RedirectToLoginMixin, PaginatorMixin, PybbFormsMixin, generic.Li
                 Topic.objects.filter(id=self.topic.id).update(views=F('views') +
                                                                 defaults.PYBB_ANONYMOUS_VIEWS_CACHE_BUFFER)
                 cache.set(cache_key, 0)
-        qs = self.topic.posts.all().select_related('user')
+        qs = self.topic.posts.all().select_related('user').prefetch_related('likes')
         if defaults.PYBB_PROFILE_RELATED_NAME:
             qs = qs.select_related('user__%s' % defaults.PYBB_PROFILE_RELATED_NAME)
         if not perms.may_moderate_topic(self.request.user, self.topic):
@@ -851,6 +854,32 @@ class TopicPollVoteView(PybbFormsMixin, generic.UpdateView):
 
     def get_success_url(self):
         return self.object.get_absolute_url()
+
+
+@method_decorator(login_required, name='dispatch')
+class LikePostView(generic.View):
+    def post(self, request, pk, *args, **kwargs):
+        if not request.is_ajax():
+            return HttpResponseBadRequest()
+        try:
+            pybb_post = Post.objects.prefetch_related('likes').annotate(likes_count=Count('likes')).get(pk=pk)
+        except ObjectDoesNotExist:
+            return Http404()
+        try:
+            like, created = Like.objects.get_or_create(
+                profile=util.get_pybb_profile(request.user), post=pybb_post)
+        except MultipleObjectsReturned:
+            keep = Like.objects.filter(profile=util.get_pybb_profile(request.user), post=pybb_post)[:1].values_list("id", flat=True)
+            Like.objects.filter(profile=util.get_pybb_profile(request.user), post=pybb_post).exclude(pk__in=list(keep)).delete()
+            return self.post(request, pk, *args, **kwargs)
+
+        likes_count = pybb_post.likes_count
+        if not created:
+            like.delete()
+            likes_count -= 1
+        else:
+            likes_count += 1
+        return HttpResponse(status=200, content=str(likes_count).encode())
 
 
 @login_required

@@ -521,6 +521,12 @@ class PollAnswerUser(models.Model):
         return '%s - %s' % (self.poll_answer.topic, self.user)
 
 
+class Like(models.Model):
+    profile = models.ForeignKey('Profile')
+    post = models.ForeignKey('Post', related_name='likes')
+    created = models.DateTimeField(auto_now_add=True)
+
+
 def create_or_check_slug(instance, model, **extra_filters):
     """
     returns a unique slug

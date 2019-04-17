@@ -40,6 +40,11 @@ def pybb_get_time(context, context_time):
     return pybb_user_time(context_time, context['user'])
 
 
+@register.simple_tag()
+def liked(post, profile):
+    return post.likes.filter(profile=profile).exists()
+
+
 class PybbTimeNode(template.Node):
     def __init__(self, time):
     #noinspection PyRedeclaration

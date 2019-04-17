@@ -12,7 +12,8 @@ from pybb.views import IndexView, CategoryView, ForumView, TopicView, \
     OpenTopicView, ModeratePost, TopicPollVoteView, LatestTopicsView, \
     UserTopics, UserPosts, topic_cancel_poll_vote, block_user, unblock_user, \
     delete_subscription, add_subscription, post_ajax_preview, \
-    mark_all_as_read, ForumSubscriptionView, UserEditPrivilegesView
+    mark_all_as_read, ForumSubscriptionView, UserEditPrivilegesView, \
+    LikePostView
 
 urlpatterns = [
     # Syndication feeds
@@ -70,6 +71,7 @@ urlpatterns += [
         name='delete_post'),
     url('^post/(?P<pk>\d+)/moderate/$', ModeratePost.as_view(),
         name='moderate_post'),
+    url('^post/(?P<pk>\d+)/like/$', LikePostView.as_view(), name='like_post'),
 
     # Attachment
     # url('^attachment/(\w+)/$', 'show_attachment', name='pybb_attachment'),

@@ -15,6 +15,61 @@ function pybb_delete_post(url, post_id, confirm_text) {
     });
 }
 
+function pybb_like_post(url, e){
+    return $.ajax({
+        url: url,
+        type: 'POST',
+        dataType: 'text',
+        success: function (r) {
+            $(e).data('count', r);
+            $(e).find('.counter').text(r);
+        }
+    })
+}
+
+$('.like').on('click', function (e) {
+    e.preventDefault();
+    if ($(this).parent().hasClass('animated')){
+        return
+    }
+    let likeCounter = $(this).data('count');
+    //animation
+    if ($(this).parent().hasClass('selected')) {
+        //like counter
+        if ($(this).hasClass('like')) {
+            likeCounter--;
+            $(this).find('.counter').text(likeCounter);
+            $(this).data('count', likeCounter);
+            $(this).find(".menulabel").text("Like");
+            $(this).find('.fa-heart').removeClass('fas').addClass('far');
+            pybb_like_post(this.href, this);
+        }
+        $(this)
+          .parent()
+          .addClass('animated bounceIn')
+          .one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
+              $(this).removeClass("selected animated bounceIn");
+          });
+    } else {
+        // like counter
+        if ($(this).hasClass('like')) {
+            likeCounter++;
+            $(this).find('.counter').text(likeCounter);
+            $(this).data('count', likeCounter);
+            $(this).find(".menulabel").text("Liked");
+            $(this).find('.fa-heart').removeClass('far').addClass('fas');
+            pybb_like_post(this.href, this);
+        }
+        $(this)
+          .parent()
+          .addClass("animated bounceIn selected")
+          .one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
+              $(this).removeClass("animated bounceIn");
+          });
+    }
+});
+
+
 jQuery(function ($) {
     function getSelectedText() {
         if (document.selection) {
