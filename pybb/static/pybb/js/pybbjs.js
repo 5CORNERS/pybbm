@@ -22,7 +22,11 @@ function pybb_like_post(url, e){
         dataType: 'text',
         success: function (r) {
             $(e).data('count', r);
-            $(e).find('.counter').text(r);
+            if(r != '0'){
+                $(e).find('.counter').text(r);
+            }else{
+                $(e).find('.counter').text('');
+            }
         }
     })
 }
@@ -38,9 +42,12 @@ $('.like').on('click', function (e) {
         //like counter
         if ($(this).hasClass('like')) {
             likeCounter--;
-            $(this).find('.counter').text(likeCounter);
+            if (likeCounter == 0) {
+                $(this).find('.counter').text('');
+            }else{
+                $(this).find('.counter').text(likeCounter);
+            }
             $(this).data('count', likeCounter);
-            $(this).find(".menulabel").text("Like");
             $(this).find('.fa-heart').removeClass('fas').addClass('far');
             pybb_like_post(this.href, this);
         }
@@ -56,7 +63,6 @@ $('.like').on('click', function (e) {
             likeCounter++;
             $(this).find('.counter').text(likeCounter);
             $(this).data('count', likeCounter);
-            $(this).find(".menulabel").text("Liked");
             $(this).find('.fa-heart').removeClass('far').addClass('fas');
             pybb_like_post(this.href, this);
         }
