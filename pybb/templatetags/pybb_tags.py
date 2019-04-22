@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import inspect
 
-import math
+import inspect
 import time
 import warnings
 
+import math
 from django import template
 from django.core.cache import cache
-from django.utils.safestring import mark_safe
+from django.utils import dateformat
 from django.utils.encoding import smart_text
 from django.utils.html import escape
-from django.utils.translation import ugettext as _, ungettext
-from django.utils import dateformat
-from django.utils.timezone import timedelta
+from django.utils.safestring import mark_safe
 from django.utils.timezone import now as tznow
+from django.utils.timezone import timedelta
+from django.utils.translation import ugettext as _, ungettext
 
-from pybb.models import TopicReadTracker, ForumReadTracker, PollAnswerUser, Topic, Post
-from pybb.permissions import perms
 from pybb import defaults, util, compat
-
+from pybb.models import TopicReadTracker, ForumReadTracker, PollAnswerUser, \
+    Topic, Post
+from pybb.permissions import perms
 
 register = template.Library()
 
@@ -44,6 +44,14 @@ def pybb_get_time(context, context_time):
 def liked(post, profile):
     return post.likes.filter(profile=profile).exists()
 
+@register.inclusion_tag('pybb/_who_liked_post.html')
+def who_liked(post, n=5):
+    return {
+        'likes': post.likes.all().select_related('profile').order_by(
+            '-created'),
+        'n': n,
+        'n_s': str(':{0}').format(n)
+    }
 
 class PybbTimeNode(template.Node):
     def __init__(self, time):

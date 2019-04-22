@@ -1,0 +1,6 @@
+<div class="tooltip-who-liked-container">{% for like in likes|slice:n_s %}
+	<div class="tooltip-like-entry">
+		{% include 'pybb/_small_avatar.html' with profile=like.profile %}
+		<div class="tooltip-like-entry-name">{{ like.profile.get_display_name }}</div>
+	</div>{% endfor %}</div>
+{% if likes|length > n %}<div class="tooltip-who-liked-text">Посмотреть все {{ likes|length }}</div>{% endif %}

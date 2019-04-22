@@ -858,28 +858,35 @@ class TopicPollVoteView(PybbFormsMixin, generic.UpdateView):
 
 @method_decorator(login_required, name='dispatch')
 class LikePostView(generic.View):
-    def post(self, request, pk, *args, **kwargs):
+    pybb_post = None
+    def dispatch(self, request, *args, **kwargs):
         if not request.is_ajax():
             return HttpResponseBadRequest()
         try:
-            pybb_post = Post.objects.prefetch_related('likes').annotate(likes_count=Count('likes')).get(pk=pk)
+            self.pybb_post = Post.objects.prefetch_related('likes').annotate(likes_count=Count('likes')).get(pk=kwargs['pk'])
         except ObjectDoesNotExist:
             return Http404()
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
         try:
             like, created = Like.objects.get_or_create(
-                profile=util.get_pybb_profile(request.user), post=pybb_post)
+                profile=util.get_pybb_profile(request.user), post=self.pybb_post)
         except MultipleObjectsReturned:
-            keep = Like.objects.filter(profile=util.get_pybb_profile(request.user), post=pybb_post)[:1].values_list("id", flat=True)
-            Like.objects.filter(profile=util.get_pybb_profile(request.user), post=pybb_post).exclude(pk__in=list(keep)).delete()
-            return self.post(request, pk, *args, **kwargs)
+            keep = Like.objects.filter(profile=util.get_pybb_profile(request.user), post=self.pybb_post)[:1].values_list("id", flat=True)
+            Like.objects.filter(profile=util.get_pybb_profile(request.user), post=self.pybb_post).exclude(pk__in=list(keep)).delete()
+            return self.post(request, *args, **kwargs)
 
-        likes_count = pybb_post.likes_count
+        likes_count = self.pybb_post.likes_count
         if not created:
             like.delete()
             likes_count -= 1
         else:
             likes_count += 1
         return HttpResponse(status=200, content=str(likes_count).encode())
+
+    def get(self, request, *args, **kwargs):
+        return render(request, 'pybb/_who_liked_post.html', {'likes': self.pybb_post.likes.all()})
 
 
 @login_required
