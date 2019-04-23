@@ -1,6 +1,6 @@
-<div class="tooltip-who-liked-container">{% for like in likes|slice:n_s %}
-	<div class="tooltip-like-entry">
+<div class="tooltip-who-liked-container">{% for like in likes %}
+	<div class="tooltip-like-entry{% if forloop.counter > n %} outer {% endif %}" title="{{ like.profile.get_display_name }}">
 		{% include 'pybb/_small_avatar.html' with profile=like.profile %}
-		<div class="tooltip-like-entry-name">{{ like.profile.get_display_name }}</div>
+		{% comment %}<div class="tooltip-like-entry-name">{{ like.profile.get_display_name }}</div>{% endcomment %}
 	</div>{% endfor %}</div>
-{% if likes|length > n %}<div class="tooltip-who-liked-text">Посмотреть все {{ likes|length }}</div>{% endif %}
+{% if likes|length > n %}<div class="tooltip-who-liked-text">Показать все {{ likes|length }}</div>{% endif %}

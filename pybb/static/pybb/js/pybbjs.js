@@ -76,28 +76,7 @@ $('.like').on('click', function (e) {
 });
 
 $('.tooltip-who-liked-text').on('click', function (e) {
-    var html = '<div id="modalWindow" class="modal hide fade in" style="display:none;">';
-    html += '<div class="modal-header">';
-    html += '<a class="close" data-dismiss="modal">×</a>';
-    html += '<h4>' + heading + '</h4>'
-    html += '</div>';
-    html += '<div class="modal-body">';
-    html += '<p>';
-    html += formContent;
-    html += '</div>';
-    html += '<div class="modal-footer">';
-    if (btnText != '') {
-        html += '<span class="btn btn-success"';
-        html += ' onClick="' + strSubmitFunc + '">' + btnText;
-        html += '</span>';
-    }
-    html += '<span class="btn" data-dismiss="modal">';
-    html += 'Close';
-    html += '</span>'; // close button
-    html += '</div>';  // footer
-    html += '</div>';  // modalWindow
-    $("#" + placementId).html(html);
-    $("#modalWindow").modal();
+    $(this).parent().find('.tooltip-who-liked-container').toggleClass('show-all')
 });
 
 jQuery(function ($) {
