@@ -79,6 +79,15 @@ $('.tooltip-who-liked-text').on('click', function (e) {
     $(this).parent().find('.tooltip-who-liked-container').toggleClass('show-all')
 });
 
+$('.tooltip-who-liked-container .fa-chevron-right').on('click', function () {
+    let container = $(this).parent();
+    container.get(0).scrollTo(container.scrollLeft() + container.width(), 0);
+});
+$('.tooltip-who-liked-container .fa-chevron-left').on('click', function () {
+    let container = $(this).parent();
+    container.get(0).scrollTo(container.scrollLeft() + -container.width(), 0);
+});
+
 jQuery(function ($) {
     function getSelectedText() {
         if (document.selection) {
