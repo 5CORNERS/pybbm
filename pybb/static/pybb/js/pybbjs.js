@@ -90,13 +90,20 @@ $('.tooltip-who-liked-container .fa-chevron-left').on('click', function () {
 
 var tooltipShowTimer;
 var tooltipHideTimer;
+var delay;
+
+if (!touch){
+    delay = 500;
+}else{
+    delay = 0;
+}
 
 $('.like-container').mouseover(function () {
     if (!$(this).hasClass('show-tooltip')) {
         let lcontainer = $(this);
         tooltipShowTimer = setTimeout(function (a=lcontainer) {
             a.addClass('show-tooltip');
-        }, 500)
+        }, delay)
     }else{
         clearTimeout(tooltipHideTimer)
     }
@@ -107,7 +114,7 @@ $('.like-container').mouseout(function () {
         let lcontainer = $(this);
         tooltipHideTimer = setTimeout(function (a=lcontainer) {
             a.removeClass('show-tooltip');
-        }, 500)
+        }, delay)
     }else{
         clearTimeout(tooltipShowTimer)
     }
