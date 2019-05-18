@@ -92,6 +92,8 @@ var tooltipShowTimer;
 var tooltipHideTimer;
 var delay;
 
+var touch = touch || undefined;
+
 if (!touch){
     delay = 500;
 }else{
