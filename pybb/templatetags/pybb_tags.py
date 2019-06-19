@@ -42,7 +42,7 @@ def pybb_get_time(context, context_time):
 
 @register.simple_tag()
 def liked(post, profile):
-    return post.likes.filter(profile=profile).exists()
+    return post.likes.filter(profile=profile, active=True).exists()
 
 @register.inclusion_tag('pybb/_who_liked_post.html')
 def who_liked(post, n=5):
@@ -287,3 +287,8 @@ def check_app_installed(app_name):
 def pybbm_calc_topic_views(topic):
     cache_key = util.build_cache_key('anonymous_topic_views', topic_id=topic.id)
     return topic.views + cache.get(cache_key, 0)
+
+
+@register.filter
+def pybb_likes_count(likes):
+    return likes.filter(active=True).count()

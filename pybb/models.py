@@ -522,9 +522,11 @@ class PollAnswerUser(models.Model):
 
 
 class Like(models.Model):
-    profile = models.ForeignKey('Profile')
-    post = models.ForeignKey('Post', related_name='likes')
+    profile = models.ForeignKey('Profile', on_delete=models.CASCADE)
+    post = models.ForeignKey('Post', related_name='likes', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
+
+    active = models.BooleanField(default=True)
 
 
 def create_or_check_slug(instance, model, **extra_filters):

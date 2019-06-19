@@ -9,7 +9,7 @@ from django.core.exceptions import PermissionDenied, ValidationError, \
     ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.db.models import F, Count
+from django.db.models import F, Count, Q
 from django.forms.utils import ErrorList
 from django.http import HttpResponseRedirect, HttpResponse, Http404, \
     HttpResponseBadRequest, \
@@ -863,7 +863,7 @@ class LikePostView(generic.View):
         if not request.is_ajax():
             return HttpResponseBadRequest()
         try:
-            self.pybb_post = Post.objects.prefetch_related('likes').annotate(likes_count=Count('likes')).get(pk=kwargs['pk'])
+            self.pybb_post = Post.objects.prefetch_related('likes').get(pk=kwargs['pk'])
         except ObjectDoesNotExist:
             return Http404()
         return super().dispatch(request, *args, **kwargs)
@@ -877,16 +877,18 @@ class LikePostView(generic.View):
             Like.objects.filter(profile=util.get_pybb_profile(request.user), post=self.pybb_post).exclude(pk__in=list(keep)).delete()
             return self.post(request, *args, **kwargs)
 
-        likes_count = self.pybb_post.likes_count
-        if not created:
-            like.delete()
+        likes_count = self.pybb_post.likes.filter(active=True).count()
+        if not created and like.active:
+            like.active = False
             likes_count -= 1
         else:
+            like.active = True
             likes_count += 1
+        like.save()
         return HttpResponse(status=200, content=str(likes_count).encode())
 
     def get(self, request, *args, **kwargs):
-        return render(request, 'pybb/_who_liked_post.html', {'likes': self.pybb_post.likes.all()})
+        return render(request, 'pybb/_who_liked_post.html', {'likes': self.pybb_post.likes.filter(active=True)})
 
 
 @login_required
