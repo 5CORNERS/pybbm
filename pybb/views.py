@@ -881,6 +881,8 @@ class LikePostView(generic.View):
         if not created and like.active:
             like.active = False
             likes_count -= 1
+        elif created:
+            pass
         else:
             like.active = True
             likes_count += 1
