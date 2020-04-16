@@ -12,12 +12,13 @@ else:
     from django.core.mail.message import EmailMultiAlternatives
 
     def send_html_mail(subject, text_msg, html_msg, sender, recipient, 
-            fail_silently=False, auth_user=None, auth_password=None, connection=None):
+            fail_silently=False, auth_user=None, auth_password=None,
+                       connection=None, headers=None):
         """Sends an email with HTML alternative."""
         connection = connection or get_connection(username=auth_user,
                                     password=auth_password,
                                     fail_silently=fail_silently)
-        msg = EmailMultiAlternatives(subject, text_msg, sender, recipient, connection=connection)
+        msg = EmailMultiAlternatives(subject, text_msg, sender, recipient, connection=connection, headers=headers or {})
         msg.attach_alternative(html_msg, "text/html")
         msg.send()
 
@@ -29,11 +30,11 @@ def send_mass_html_mail(emails, *args, **kwargs):
         (subject, text_msg, sender, recipient, [html_msg])
     """
     for email in emails:
-        subject, text_msg, sender, recipient = email[0:4]
-        html_msg = email[4] if len(email) > 4 else ''
+        subject, text_msg, sender, recipient, html_msg, headers = email[0:6]
         if html_msg:
-            send_html_mail(subject, text_msg, html_msg, sender, recipient, *args, **kwargs)
+            send_html_mail(subject, text_msg, html_msg, sender, recipient, headers=headers, *args, **kwargs)
         else:
+            # FIXME: send_mail does not provide "headers" argument
             send_mail(subject, text_msg, sender, recipient, *args, **kwargs)
 
 def get_image_field_class():

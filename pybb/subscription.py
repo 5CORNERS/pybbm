@@ -85,12 +85,15 @@ def send_notification(users, template, context=None):
         context['subject'] = subject
 
         txt_message = render_to_string('pybb/mail_templates/%s_body.html' % template, context)
+        header = {
+            'List-Unsubscribe': context['delete_url_full']
+        }
         try:
             html_message = render_to_string('pybb/mail_templates/%s_body-html.html' % template, context)
         except TemplateDoesNotExist as e:
-            mails.append((subject, txt_message, from_email, [user.email]))
+            mails.append((subject, txt_message, from_email, [user.email], None, header))
         else:
-            mails.append((subject, txt_message, from_email, [user.email], html_message))
+            mails.append((subject, txt_message, from_email, [user.email], html_message, header))
 
     # Send mails
     send_mass_html_mail(mails, fail_silently=True)
