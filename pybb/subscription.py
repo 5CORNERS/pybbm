@@ -58,7 +58,11 @@ def send_notification(users, template, context=None):
     if not 'site' in context:
         context['site'] = Site.objects.get_current()
     old_lang = translation.get_language()
-    from_email = settings.DEFAULT_FROM_EMAIL
+
+    if hasattr(settings, 'PYBB_FROM_EMAIL'):
+        from_email = settings.PYBB_FROM_EMAIL
+    else:
+        from_email = settings.DEFAULT_FROM_EMAIL
 
     mails = []
     for user in users:
