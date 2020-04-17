@@ -90,7 +90,7 @@ def send_notification(users, template, context=None):
 
         txt_message = render_to_string('pybb/mail_templates/%s_body.html' % template, context)
         header = {
-            'List-Unsubscribe': context['delete_url_full']
+            'List-Unsubscribe': f'<{context["delete_url_full"]}>'
         }
         try:
             html_message = render_to_string('pybb/mail_templates/%s_body-html.html' % template, context)
