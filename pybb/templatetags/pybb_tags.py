@@ -46,7 +46,8 @@ def pybb_get_time(context, context_time):
 
 
 @register.simple_tag()
-def liked(post, profile):
+def liked(post, user):
+    profile = pybb_get_profile(user)
     return post.likes.filter(profile=profile, active=True).exists()
 
 @register.inclusion_tag('pybb/_who_liked_post.html')

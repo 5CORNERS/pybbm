@@ -44,6 +44,7 @@ class PybbProfile(models.Model):
     autosubscribe = models.BooleanField(_('Automatically subscribe'),
                                         help_text=_('Automatically subscribe to topics that you answer'),
                                         default=defaults.PYBB_DEFAULT_AUTOSUBSCRIBE)
+    receive_emails = models.BooleanField(default=True) # TODO: l18n and help
 
     def save(self, *args, **kwargs):
         self.signature_html = util._get_markup_formatter()(self.signature)
