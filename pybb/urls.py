@@ -15,6 +15,8 @@ from pybb.views import IndexView, CategoryView, ForumView, TopicView, \
     mark_all_as_read, ForumSubscriptionView, UserEditPrivilegesView, \
     LikePostView
 
+app_name = 'pybbm'
+
 urlpatterns = [
     # Syndication feeds
     url('^feeds/posts/$', LastPosts(), name='feed_posts'),
