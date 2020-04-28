@@ -222,6 +222,13 @@ class Topic(models.Model):
         except IndexError:
             return None
 
+    @cached_property
+    def last_public_post(self):
+        try:
+            return self.posts.filter(on_moderation=False).order_by('-created', '-id').select_related('user')[0]
+        except IndexError:
+            return None
+
     def get_absolute_url(self):
         if defaults.PYBB_NICE_URL:
             return reverse('pybb:topic', kwargs={'slug': self.slug, 'forum_slug': self.forum.slug, 'category_slug': self.forum.category.slug})
