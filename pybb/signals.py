@@ -9,11 +9,17 @@ from pybb import util, defaults, compat
 from pybb.permissions import perms
 
 
-def topic_saved(instance, **kwargs):
+def topic_saved(instance:Topic, **kwargs):
+    # ignore topics which on moderation
+    if instance.on_moderation:
+        return
     if kwargs['created']:
         notify_forum_subscribers(instance)
 
-def post_saved(instance, **kwargs):
+def post_saved(instance:Post, **kwargs):
+    # ignore posts which on moderation
+    if instance.on_moderation:
+        return
     # signal triggered by loaddata command, ignore
     if kwargs.get('raw', False):
         return
