@@ -23,10 +23,13 @@ def notify_forum_subscribers(topic):
     qs = ForumSubscription.objects.exclude(user=topic.user).filter(forum=topic.forum)
     notifications = qs.filter(type=ForumSubscription.TYPE_NOTIFY)
     if notifications.count():
+        delete_url = reverse('pybb:delete_subscription', args=[topic.id])
+        current_site = Site.objects.get_current()
         users = [n.user for n in notifications.select_related('user')]
         context = {
             'manage_url': reverse('pybb:forum_subscription', kwargs={'pk': forum.id}),
             'topic': topic,
+            'delete_url_full': 'http://%s%s' % (current_site, delete_url),
         }
         send_notification(users, 'forum_subscription_email', context)
     subscriptions = qs.filter(type=ForumSubscription.TYPE_SUBSCRIBE)
