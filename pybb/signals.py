@@ -17,9 +17,6 @@ def topic_saved(instance:Topic, **kwargs):
         notify_forum_subscribers(instance)
 
 def post_saved(instance:Post, **kwargs):
-    # ignore posts which on moderation
-    if instance.on_moderation:
-        return
     # signal triggered by loaddata command, ignore
     if kwargs.get('raw', False):
         return
@@ -30,7 +27,9 @@ def post_saved(instance:Post, **kwargs):
         return
 
     instance._post_saved_done = True
-    if not defaults.PYBB_DISABLE_NOTIFICATIONS and instance.updated == None:
+    if (not defaults.PYBB_DISABLE_NOTIFICATIONS
+            and instance.updated is None
+            and not instance.on_moderation):
         notify_topic_subscribers(instance)
 
         if util.get_pybb_profile(instance.user).autosubscribe and \
