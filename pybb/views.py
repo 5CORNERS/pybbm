@@ -718,6 +718,10 @@ class ModeratePost(generic.RedirectView):
             raise PermissionDenied
         post.on_moderation = False
         post.save()
+        if post.is_topic_head:
+            topic = post.topic
+            topic.on_moderation = False
+            topic.save()
         return post.get_absolute_url()
 
 
